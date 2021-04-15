@@ -25,7 +25,7 @@ public class MeberApiController {
                 .map(m -> new MemberDto(m.getName()))
                 .collect(Collectors.toList());
 
-        return new Result(memberDtos);
+        return new Result(memberDtos.size(), memberDtos);
     }
 
     @PostMapping("/")
@@ -80,6 +80,7 @@ public class MeberApiController {
     @Data
     @AllArgsConstructor
     static class Result<T> {
+        private int size;
         private T data;
     }
 
