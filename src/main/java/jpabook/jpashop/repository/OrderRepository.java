@@ -70,4 +70,34 @@ public class OrderRepository {
         )
                 .getResultList();
     }
+
+    // distinct
+    // 쿼리에 distinct 키워드가 추가되고
+    // JPA가 동일한 객체 (PK가 동일하다면 == 동일한 객체라면) 중복을 제거한다.
+    public List<Order> findAllWithItem(OrderSearch orderSearch) {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class
+        )
+                // 컬렉션 페치 조인을 사용하면 페이징이 불가능하다.
+                // 하이버네이트는 경고 로그를 남기면서 모든 데이터를 DB에서 읽어와 메모리에서 페이징 처리를 한다. (outOfMemory 에러 발생이 가능하므로 위험)
+                //.setFirstResult(1)
+                //.setMaxResults(100)
+                .getResultList();
+
+    }
+
+    public List<Order> findAllWithMemberDeilvery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+        )
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
